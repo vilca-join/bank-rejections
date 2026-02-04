@@ -1,0 +1,83 @@
+       
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. RECHAZOS-BANCARIOS.
+       AUTHOR. JOSE-VILCA.
+
+       ENVIRONMENT DIVISION.
+
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ARCHIVO-ENTRADA ASSIGN TO "../data/transacciones.dat"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT REPORTE-RECHAZOS ASSIGN TO "../data/rechazo.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  ARCHIVO-ENTRADA.
+       01  REG-TRANSACCION.
+           05  ID-CLIENTE          PIC 9(08).
+           05  MONTO-TRANSAC       PIC 9(07)V99.
+           05  SALDO-DISP          PIC 9(07)V99.
+
+       FD  REPORTE-RECHAZOS.
+       01  REG-REPORTE             PIC X(80).
+
+       WORKING-STORAGE SECTION.
+       01  WS-FLAGS.
+           05  FS-FIN-ARCHIVO  PIC X(01)   VALUE   'N'.
+               88  EOF         VALUE   'S'.
+               88  NOT-EOF     VALUE   'N'.      
+       01  WS-REGISTRO-DETALLE.
+           05  WS-ID-CLIENTE   PIC 9(08).
+           05  WS-MONTO        PIC 9(07)V99.
+           05  WS-SALDO-ACTUAL PIC 9(07)V99.
+
+
+
+       01  WS-CONSTANTES.
+           05  ERR-SALDO-INSUF PIC X(30) 
+           VALUE "RECHAZO: SALDO INSUFICIENTE ".
+           05  ERR-CUENTA-BLOQ PIC X(30)
+           VALUE "RECHAZO: CUENTA BLOQUEADA ".
+           05  ERR-DATOS-INVALID   PIC X(30)
+           VALUE "RECHAZO: DATOS INVALIDOS ".
+         
+       PROCEDURE DIVISION.
+
+       000-CONTROL-MAESTRO.
+           PERFORM 100-INICIAR-PROGRAMA.
+           PERFORM 200-PROCESAR-ARCHIVO UNTIL EOF.
+           PERFORM 300-FINALIZAR-PROGRAMA.
+           STOP RUN.
+
+       100-INICIAR-PROGRAMA.
+           OPEN INPUT ARCHIVO-ENTRADA
+               OUTPUT REPORTE-RECHAZOS.
+               
+           PERFORM 150-LEER-REGISTRO.
+
+       150-LEER-REGISTRO.
+           READ ARCHIVO-ENTRADA
+               AT END 
+                   SET EOF TO TRUE
+               NOT AT END 
+                   MOVE REG-TRANSACCION TO WS-REGISTRO-DETALLE
+           END-READ.
+
+       200-PROCESAR-ARCHIVO.
+
+           IF WS-MONTO > WS-SALDO-ACTUAL
+
+               WRITE REG-REPORTE FROM WS-REGISTRO-DETALLE
+               DISPLAY "CLIENTE: " WS-ID-CLIENTE " || " ERR-SALDO-INSUF
+           END-IF.
+           PERFORM 150-LEER-REGISTRO.
+
+       300-FINALIZAR-PROGRAMA.
+           CLOSE ARCHIVO-ENTRADA
+                 REPORTE-RECHAZOS.
+
+           DISPLAY "PROCESO FINALIZADO CON EXITO.".
+           
