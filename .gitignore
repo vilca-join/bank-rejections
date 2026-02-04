@@ -1,0 +1,7 @@
+# Ejecutables
+*.exe
+*.out
+*.bin
+
+# Archivos de datos generados (opcional)
+data/rechazo.txt
