@@ -89,9 +89,9 @@ Este pequeño programa simula el proceso de los rechazos que realiza un banco `r
 ## 📊 Ejemplo de Salida
 ```text
 ---------------------------------------
-INGRESE UN NUMERO ENTERO:
-6
----------------------------------------
-RESULTADO CALCULADO:                720
+CLIENTE: 00001234 || RECHAZO: SALDO INSUFICIENTE   
+CLIENTE: 00005678 || RECHAZO: SALDO INSUFICIENTE   
+CLIENTE: 00009999 || RECHAZO: SALDO INSUFICIENTE
+PROCESO FINALIZADO CON EXITO.
 ---------------------------------------
 ```
